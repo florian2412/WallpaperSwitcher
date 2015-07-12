@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WallpaperChangerV2</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- Menu drawer -->
+    <string name="one">Settings</string>
+
+</resources>
