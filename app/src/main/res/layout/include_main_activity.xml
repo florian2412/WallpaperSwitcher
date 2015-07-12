@@ -24,52 +24,14 @@
 
         <!-- Body de l'écran -->
 
-        <android.support.v7.widget.CardView
+        <FrameLayout
+            android:id="@+id/frame_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_height="match_parent" />
 
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="2dp"
-            android:visibility="gone" >
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="350dp"
-                    android:scaleType="centerCrop" />
-        </android.support.v7.widget.CardView>
-
-        <EditText
-            android:id="@+id/editTextRecherche"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:hint="Rechercher..." />
-
-        <Button
-            android:id="@+id/buttonRecherche"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="16dp"
-            android:text="Rechercher des images"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <android.support.v7.widget.RecyclerView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </RelativeLayout>
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fabLoadImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -93,7 +55,7 @@
         app:pressedTranslationZ="5dp"
         app:borderWidth="0dp"
         android:visibility="gone"
-        />
+        />-->
 
 </android.support.design.widget.CoordinatorLayout>
 

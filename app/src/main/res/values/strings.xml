@@ -4,6 +4,12 @@
     <string name="action_settings">Settings</string>
 
     <!-- Menu drawer -->
-    <string name="one">Settings</string>
+    <string name="menu_item_title1">Rechercher des fonds d\'écran</string>
+    <string name="menu_item_flickr">depuis Flickr</string>
+    <string name="menu_item_unsplash">depuis Unsplash.it</string>
+    <string name="menu_item_title2">Autres</string>
+    <string name="menu_item_settings">Paramètres</string>
+    <string name="menu_item_about">A propos</string>
+
 
 </resources>
