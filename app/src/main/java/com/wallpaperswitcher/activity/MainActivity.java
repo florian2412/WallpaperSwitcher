@@ -3,9 +3,11 @@ package com.wallpaperswitcher.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +16,22 @@ import android.transition.Explode;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.github.pwittchen.networkevents.library.ConnectivityStatus;
+import com.github.pwittchen.networkevents.library.NetworkEvents;
+import com.github.pwittchen.networkevents.library.NetworkHelper;
+import com.github.pwittchen.networkevents.library.event.ConnectivityChanged;
+import com.github.pwittchen.networkevents.library.event.WifiSignalStrengthChanged;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.wallpaperswitcher.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,12 +51,20 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle drawerToggle;
 
+    private Bus bus;
+    private NetworkEvents networkEvents;
+
+    private ConnectivityStatus connectivityStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         init();
+
+        bus = new Bus();
+        networkEvents = new NetworkEvents(this, bus);
 
         if (savedInstanceState == null) {
             displayFragment(0);
@@ -105,16 +129,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //définit l'agencement des cellules, ici de façon verticale, comme une ListView
-        //recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        //pour adapter en grille comme une RecyclerView, avec 1 cellules par ligne
-        //recyclerView.setLayoutManager(new GridLayoutManager(this,1));
-
-        //puis créer un MyAdapter, lui fournir notre liste de villes.
-        //cet adapter servira à remplir notre recyclerview
-        //recyclerView.setAdapter(new CardsAdapter(images));
-
         initDrawerLayout();
     }
 
@@ -143,12 +157,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.nav_flickr :
                 fragment = new FlickrFragment();
+                break;
             case R.id.nav_unsplash :
                 fragment = new UnsplashFragment();
+                break;
             case R.id.nav_settings :
                 fragment = new SettingsFragment();
+                break;
             case R.id.nav_about :
                 fragment = new AboutFragment();
+                break;
             default :
                 break;
         }
@@ -161,10 +179,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Error in creating fragment
             Log.e("MainActivity", "Error in creating fragment");
-            /*Snackbar.make(fabChangeWallpaper, "Changement de fragment raté", Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {}
-            }).show();*/
         }
     }
 /*
@@ -181,6 +195,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public ConnectivityStatus getConnectivityStatus() {
+        return connectivityStatus;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bus.register(this);
+        networkEvents.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        bus.unregister(this);
+        networkEvents.unregister();
+    }
+
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
@@ -189,15 +221,6 @@ public class MainActivity extends AppCompatActivity {
             getFragmentManager().popBackStack();
         }
     }
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-*/
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -217,4 +240,21 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @Subscribe
+    public void onConnectivityChanged(ConnectivityChanged event) {
+        if(event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET)) ||
+                event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.MOBILE_CONNECTED))) {
+            Snackbar.make(drawerLayout, "Vous êtes bien connecté à Internet", Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            }).show();
+        } else {
+            Snackbar.make(drawerLayout, "Vous n'êtes pas connecté à Internet", Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            }).show();
+        }
+    }
 }

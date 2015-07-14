@@ -3,6 +3,8 @@ package com.wallpaperswitcher.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.github.pwittchen.networkevents.library.ConnectivityStatus;
 import com.wallpaperswitcher.R;
 import com.wallpaperswitcher.cards.CardsAdapter;
 import com.wallpaperswitcher.tasks.ListPhotoFlickrTask;
@@ -30,8 +34,8 @@ public class MainFragment extends Fragment {
     private View rootView;
     private Activity activity;
 
-    //@Bind(R.id.recyclerView)
-    //RecyclerView recyclerView;
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
 
     /*@Bind(R.id.fabLoadImage)
     FloatingActionButton fabLoadImage;
@@ -39,8 +43,8 @@ public class MainFragment extends Fragment {
     @Bind(R.id.fabChangeWallpaper)
     FloatingActionButton fabChangeWallpaper;*/
 
-    @Bind(R.id.imageView)
-    ImageView imageView;
+    //@Bind(R.id.imageView)
+    //ImageView imageView;
 
     @Bind(R.id.editTextRecherche)
     EditText editTextRecherche;
@@ -50,47 +54,47 @@ public class MainFragment extends Fragment {
 
     private List<String> images = new ArrayList<>();
 
+    private ConnectivityStatus connectivityStatus;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.rootView = inflater.inflate(R.layout.fragment_main, container, false);
         this.activity = this.getActivity();
+        ButterKnife.bind(this, rootView);
         return rootView;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        this.activity.setTitle("Titre principal");
 
-        //init();
-/*
-        buttonRecherche.setOnClickListener(new View.OnClickListener() {
+
+
+        buttonRecherche.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (editTextRecherche.getText().toString() != null)
-                    new ListPhotoFlickrTask().execute("flickr.photos.search", "61d8670199834d7d7d48bcf570071a7a", editTextRecherche.getText().toString(), "", "json", "1");
+                    new ListPhotoFlickrTask().execute(activity.getResources().getString(R.string.flickr_photos_search),
+                            activity.getResources().getString(R.string.flickr_cle_api), editTextRecherche.getText().toString(), "",
+                            activity.getResources().getString(R.string.flickr_output),
+                            activity.getResources().getString(R.string.flickr_no_json_callback));
                 else
-                    new ListPhotoFlickrTask().execute("flickr.photos.search", "61d8670199834d7d7d48bcf570071a7a", "papillon", "", "json", "1");
+                    new ListPhotoFlickrTask().execute(activity.getResources().getString(R.string.flickr_photos_search),
+                            activity.getResources().getString(R.string.flickr_cle_api), "papillon", "",
+                            activity.getResources().getString(R.string.flickr_output),
+                            activity.getResources().getString(R.string.flickr_no_json_callback));
             }
         });
-        */
-    }
 
-    private void init(){
-        // ButterKnife, à initialiser après le setContentView de l'activity
-        ButterKnife.bind(this.getActivity());
+        // Définit l'agencement des cellules, ici de façon verticale, comme une ListView
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
-        //définit l'agencement des cellules, ici de façon verticale, comme une ListView
-        //recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        // Pour adapter en grille comme une RecyclerView, avec 1 cellules par ligne
+        recyclerView.setLayoutManager(new GridLayoutManager(activity,1));
 
-        //pour adapter en grille comme une RecyclerView, avec 1 cellules par ligne
-        //recyclerView.setLayoutManager(new GridLayoutManager(activity,1));
-
-        //puis créer un MyAdapter, lui fournir notre liste de villes.
-        //cet adapter servira à remplir notre recyclerview
-        //recyclerView.setAdapter(new CardsAdapter(images));
-    }
-
-    private void addImageToCard(String urlImage) {
-        images.add(urlImage);
+        // Puis créer un MyAdapter, lui fournir notre liste de villes.
+        // Cet adapter servira à remplir notre recyclerview
+        recyclerView.setAdapter(new CardsAdapter(images));
     }
 }
