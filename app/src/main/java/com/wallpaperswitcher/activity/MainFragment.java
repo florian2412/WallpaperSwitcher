@@ -84,6 +84,7 @@ public class MainFragment extends Fragment {
                             activity.getResources().getString(R.string.flickr_cle_api), "papillon", "",
                             activity.getResources().getString(R.string.flickr_output),
                             activity.getResources().getString(R.string.flickr_no_json_callback));
+
             }
         });
 
@@ -96,5 +97,18 @@ public class MainFragment extends Fragment {
         // Puis créer un MyAdapter, lui fournir notre liste de villes.
         // Cet adapter servira à remplir notre recyclerview
         recyclerView.setAdapter(new CardsAdapter(images));
+    }
+
+
+    /*public static void addImageToCard(String urlPhoto) {
+        this.getImages().add(urlPhoto);
+    }*/
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 }

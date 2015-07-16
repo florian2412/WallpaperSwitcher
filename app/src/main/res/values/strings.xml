@@ -5,6 +5,7 @@
     <string name="menu_item_title1">Rechercher des fonds d\'écran</string>
     <string name="menu_item_flickr">depuis Flickr</string>
     <string name="menu_item_unsplash">depuis Unsplash.it</string>
+    <string name="menu_item_storage">depuis vos photos</string>
     <string name="menu_item_title2">Autres</string>
     <string name="menu_item_settings">Paramètres</string>
     <string name="menu_item_about">A propos</string>
@@ -29,5 +30,8 @@
     <string name="available_access_points">Available Access Points:</string>
     <string name="wifi_signal_strength_change_counter">WiFi signal strength change counter:</string>
     <string name="waiting_for_signal_strength_change">Waiting for signal strength change…</string>
+
+    <string name="network_connected">Vous êtes bien connecté à Internet</string>
+    <string name="network_not_connected">Vous n\'êtes pas connecté à Internet</string>
 
 </resources>

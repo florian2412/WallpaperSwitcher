@@ -10,4 +10,6 @@
     <color name="colorPrimary">@color/cyan</color>
     <color name="colorPrimaryDark">@color/cyan</color>
     <color name="statusBarColor">@color/cyan</color>
+
+    <color name="primary">#4CAF50</color>
 </resources>

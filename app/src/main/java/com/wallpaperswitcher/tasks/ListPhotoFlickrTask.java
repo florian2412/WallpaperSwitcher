@@ -1,7 +1,9 @@
 package com.wallpaperswitcher.tasks;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.wallpaperswitcher.activity.MainFragment;
 import com.wallpaperswitcher.flickrService.FlickrService;
 import com.wallpaperswitcher.flickrService.model.FlickSearch;
 import com.wallpaperswitcher.flickrService.model.Photo;
@@ -49,8 +51,8 @@ public class ListPhotoFlickrTask extends AsyncTask<String,Void,FlickSearch> {
 
             for(int i = 0; i < 10; i++) {
                 photo = flickSearch.getPhotos().getPhoto().get(i);
-                urlPhoto = "https://farm" + photo.getFarm() + ".staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + ".jpg";
-                //addImageToCard(urlPhoto);
+                urlPhoto = "https://farm"  + photo.getFarm() + ".staticflickr.com/" + photo.getServer() + "/" + photo.getId() + "_" + photo.getSecret() + ".jpg";
+                //MainFragment.addImageToCard(urlPhoto);
             }
         }
     }

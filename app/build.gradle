@@ -21,29 +21,24 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.2.0'
-
     // Load image async from url
     compile 'com.squareup.picasso:picasso:2.5.2'
-
     // Bind object with id
     compile 'com.jakewharton:butterknife:7.0.0'
-
     // REST Client
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-
     // Circle image header drawerlayout
     compile 'de.hdodenhof:circleimageview:1.2.1'
-
     // Listening and change network connections
     compile 'com.squareup:otto:1.3.8'
     compile 'com.github.pwittchen:networkevents:1.0.5'
-
+    // Add blur behind NavigationDrawer
+    // compile 'com.ms-square:etsyblur:0.1.1'
     //compile 'com.xgc1986.android:parallaxpagertransformer:1.0.3'
-
+    compile project(':dribSearch')
 }

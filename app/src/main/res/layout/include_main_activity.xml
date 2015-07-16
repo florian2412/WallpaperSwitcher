@@ -14,13 +14,51 @@
         android:orientation="vertical"
         >
 
-        <android.support.v7.widget.Toolbar
+       <!-- <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            />
+            /> -->
+
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_gravity="center"
+            android:background="@color/colorPrimary"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <org.liuyichen.dribsearch.DribSearchView
+                    android:id="@+id/dribSearchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="18dp"
+                    app:breadth="2"
+                    app:search_color="#fff"/>
+
+                <EditText
+                    android:id="@+id/editview"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginRight="30dp"
+                    android:visibility="gone"
+                    android:background="@null"
+                    android:singleLine="true" />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
 
         <!-- Body de l'écran -->
 
@@ -31,19 +69,7 @@
 
     </LinearLayout>
 
-    <!--<android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabLoadImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="10dp"
-        app:elevation="@dimen/fab_elevation"
-        app:backgroundTint="@color/blue"
-        app:pressedTranslationZ="5dp"
-        app:borderWidth="0dp"
-        android:visibility="gone"
-        />
-
+<!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabChangeWallpaper"
         android:layout_width="wrap_content"

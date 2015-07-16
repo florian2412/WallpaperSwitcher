@@ -2,12 +2,16 @@ package com.wallpaperswitcher.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,12 +19,18 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.github.pwittchen.networkevents.library.ConnectivityStatus;
 import com.github.pwittchen.networkevents.library.NetworkEvents;
 import com.github.pwittchen.networkevents.library.NetworkHelper;
@@ -30,6 +40,8 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.wallpaperswitcher.R;
 
+import org.liuyichen.dribsearch.DribSearchView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +49,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int MAIN_FRAGMENT = 0;
 
     // @Bind permet d'associer un composant à son id (librairie ButterKnife)
     // Permet de ne pas l'associer dans le oncreate
@@ -48,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    @Bind (R.id.navigationViewHeader)
+    RelativeLayout navigationViewHeader;
+
+    @Bind (R.id.dribSearchView)
+    DribSearchView dribSearchView;
+
+    //private MaterialMenuDrawable materialMenu;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -67,8 +89,50 @@ public class MainActivity extends AppCompatActivity {
         networkEvents = new NetworkEvents(this, bus);
 
         if (savedInstanceState == null) {
-            displayFragment(0);
+            displayFragment(MAIN_FRAGMENT);
         }
+
+
+        final EditText editview = (EditText) findViewById(R.id.editview);
+
+        dribSearchView = (DribSearchView) findViewById(R.id.dribSearchView);
+        dribSearchView.setOnClickSearchListener(new DribSearchView.OnClickSearchListener() {
+            @Override
+            public void onClickSearch() {
+                drawerToggle.onDrawerOpened(drawerLayout);
+                dribSearchView.changeLine();
+                //materialMenu.animateIconState(MaterialMenuDrawable.IconState.ARROW, true);
+            }
+        });
+        dribSearchView.setOnChangeListener(new DribSearchView.OnChangeListener() {
+            @Override
+            public void onChange(DribSearchView.State state) {
+                switch (state) {
+                    case LINE:
+                        editview.setVisibility(View.VISIBLE);
+                        editview.setFocusable(true);
+                        editview.setFocusableInTouchMode(true);
+                        editview.requestFocus();
+                        break;
+                    case SEARCH:
+                        editview.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                drawerToggle.onDrawerClosed(drawerLayout);
+                dribSearchView.changeSearch();
+                //materialMenu.animateIconState(MaterialMenuDrawable.IconState.BURGER, true);
+            }
+        });
+
+        //materialMenu = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.EXTRA_THIN);
+        //toolbar.setNavigationIcon(materialMenu);
+        //materialMenu.setNeverDrawTouch(true);
+
 
         /*
         fabLoadImage.setOnClickListener(new View.OnClickListener() {
@@ -101,16 +165,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-
-        /*buttonRecherche.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editTextRecherche.getText().toString() != null)
-                    new ListPhotoFlickrTask().execute("flickr.photos.search", "61d8670199834d7d7d48bcf570071a7a", editTextRecherche.getText().toString(), "", "json", "1");
-                else
-                    new ListPhotoFlickrTask().execute("flickr.photos.search", "61d8670199834d7d7d48bcf570071a7a", "papillon", "", "json", "1");
-            }
-        });*/
     }
 
     private void init(){
@@ -137,12 +191,19 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        // Mon action
-                        drawerLayout.closeDrawers();
                         displayFragment(menuItem.getItemId());
+                        drawerLayout.closeDrawers();
                         return true;
                     }
                 });
+
+        navigationViewHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayFragment(MAIN_FRAGMENT);
+                drawerLayout.closeDrawers();
+            }
+        });
     }
 
     /**
@@ -152,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         // Update the main content by replacing fragments
         Fragment fragment = null;
         switch (id) {
-            case 0 :
+            case MAIN_FRAGMENT :
                 fragment = new MainFragment();
                 break;
             case R.id.nav_flickr :
@@ -161,6 +222,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_unsplash :
                 fragment = new UnsplashFragment();
                 break;
+            case R.id.nav_storage :
+                fragment = new StorageFragment();
+                break;
             case R.id.nav_settings :
                 fragment = new SettingsFragment();
                 break;
@@ -168,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new AboutFragment();
                 break;
             default :
+                fragment = new MainFragment();
                 break;
         }
 
@@ -181,11 +246,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Error in creating fragment");
         }
     }
-/*
-    private void addImageToCard(String urlImage) {
-        images.add(urlImage);
-    }
-*/
+
     private void setupWindowAnimations() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Explode explode = new Explode();
@@ -223,11 +284,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Synchroniser le drawerToggle après la restauration via onRestoreInstanceState
@@ -240,17 +296,41 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    // Gestion du menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_option_search:
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+                item.setActionView(searchView);
+                item.expandActionView();
+                return true;
+        }
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        //SearchView searchView = (SearchView) menu.findItem(R.id.menu_option_search).getActionView();
+        //searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+    }
+
     @Subscribe
     public void onConnectivityChanged(ConnectivityChanged event) {
         if(event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET)) ||
                 event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.MOBILE_CONNECTED))) {
-            Snackbar.make(drawerLayout, "Vous êtes bien connecté à Internet", Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+            Snackbar.make(drawerLayout, getResources().getString(R.string.network_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                 }
             }).show();
         } else {
-            Snackbar.make(drawerLayout, "Vous n'êtes pas connecté à Internet", Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+            Snackbar.make(drawerLayout, getResources().getString(R.string.network_not_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                 }
