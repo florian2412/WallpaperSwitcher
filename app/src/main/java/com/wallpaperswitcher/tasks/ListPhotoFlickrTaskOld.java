@@ -1,9 +1,7 @@
 package com.wallpaperswitcher.tasks;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 
-import com.wallpaperswitcher.activity.MainFragment;
 import com.wallpaperswitcher.flickrService.FlickrService;
 import com.wallpaperswitcher.flickrService.model.FlickSearch;
 import com.wallpaperswitcher.flickrService.model.Photo;
@@ -11,10 +9,7 @@ import com.wallpaperswitcher.flickrService.model.Photo;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidLog;
 
-/**
- * Created by FlorianXPS on 12/07/2015.
- */
-public class ListPhotoFlickrTask extends AsyncTask<String,Void,FlickSearch> {
+public class ListPhotoFlickrTaskOld extends AsyncTask<String,Void,FlickSearch> {
 
     private FlickSearch flickSearch;
 

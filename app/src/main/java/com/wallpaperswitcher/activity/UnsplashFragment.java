@@ -18,7 +18,7 @@ public class UnsplashFragment extends Fragment {
     private Activity activity;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.rootView = inflater.inflate(R.layout.activity_main, container, false);
+        this.rootView = inflater.inflate(R.layout.fragment_unsplash, container, false);
         this.activity = this.getActivity();
 
         return rootView;

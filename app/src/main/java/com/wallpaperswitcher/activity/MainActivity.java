@@ -2,16 +2,11 @@ package com.wallpaperswitcher.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,27 +18,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.widget.Toast;
 
-import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.github.pwittchen.networkevents.library.ConnectivityStatus;
 import com.github.pwittchen.networkevents.library.NetworkEvents;
-import com.github.pwittchen.networkevents.library.NetworkHelper;
 import com.github.pwittchen.networkevents.library.event.ConnectivityChanged;
-import com.github.pwittchen.networkevents.library.event.WifiSignalStrengthChanged;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.wallpaperswitcher.R;
-
-import org.liuyichen.dribsearch.DribSearchView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -63,20 +45,19 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind (R.id.navigationViewHeader)
+    @Bind(R.id.navigationViewHeader)
     RelativeLayout navigationViewHeader;
 
-    @Bind (R.id.dribSearchView)
-    DribSearchView dribSearchView;
-
-    //private MaterialMenuDrawable materialMenu;
+    @Bind(R.id.fabSearch)
+    FloatingActionButton fabSearch;
 
     private ActionBarDrawerToggle drawerToggle;
 
     private Bus bus;
     private NetworkEvents networkEvents;
-
     private ConnectivityStatus connectivityStatus;
+
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,48 +73,6 @@ public class MainActivity extends AppCompatActivity {
             displayFragment(MAIN_FRAGMENT);
         }
 
-
-        final EditText editview = (EditText) findViewById(R.id.editview);
-
-        dribSearchView = (DribSearchView) findViewById(R.id.dribSearchView);
-        dribSearchView.setOnClickSearchListener(new DribSearchView.OnClickSearchListener() {
-            @Override
-            public void onClickSearch() {
-                drawerToggle.onDrawerOpened(drawerLayout);
-                dribSearchView.changeLine();
-                //materialMenu.animateIconState(MaterialMenuDrawable.IconState.ARROW, true);
-            }
-        });
-        dribSearchView.setOnChangeListener(new DribSearchView.OnChangeListener() {
-            @Override
-            public void onChange(DribSearchView.State state) {
-                switch (state) {
-                    case LINE:
-                        editview.setVisibility(View.VISIBLE);
-                        editview.setFocusable(true);
-                        editview.setFocusableInTouchMode(true);
-                        editview.requestFocus();
-                        break;
-                    case SEARCH:
-                        editview.setVisibility(View.GONE);
-                        break;
-                }
-            }
-        });
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                drawerToggle.onDrawerClosed(drawerLayout);
-                dribSearchView.changeSearch();
-                //materialMenu.animateIconState(MaterialMenuDrawable.IconState.BURGER, true);
-            }
-        });
-
-        //materialMenu = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.EXTRA_THIN);
-        //toolbar.setNavigationIcon(materialMenu);
-        //materialMenu.setNeverDrawTouch(true);
-
-
         /*
         fabLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 fabChangeWallpaper.setVisibility(View.VISIBLE);
             }
         });
-
+/*
         fabChangeWallpaper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -167,26 +106,7 @@ public class MainActivity extends AppCompatActivity {
         */
     }
 
-    private void init(){
-        // ButterKnife, à initialiser après le setContentView de l'activity
-        ButterKnife.bind(this);
-
-        setupWindowAnimations();
-
-        drawerToggle = new ActionBarDrawerToggle(this,this.drawerLayout,0,0);
-        drawerLayout.setDrawerListener(this.drawerToggle);
-
-        // Definir notre toolbar en tant qu'actionBar
-        setSupportActionBar(toolbar);
-
-        // Afficher le bouton retour
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        initDrawerLayout();
-    }
-
-    private void initDrawerLayout(){
+    private void initListener() {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -204,6 +124,27 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawers();
             }
         });
+    }
+
+    private void init(){
+        // ButterKnife, à initialiser après le setContentView de l'activity
+        ButterKnife.bind(this);
+
+        setupWindowAnimations();
+
+        drawerToggle = new ActionBarDrawerToggle(this,this.drawerLayout,0,0);
+        drawerLayout.setDrawerListener(this.drawerToggle);
+
+        // Definir notre toolbar en tant qu'actionBar
+        setSupportActionBar(toolbar);
+
+        // Afficher le bouton retour
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        fabSearch.setVisibility(View.GONE);
+
+        initListener();
     }
 
     /**
@@ -256,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public ConnectivityStatus getConnectivityStatus() {
+    public final ConnectivityStatus getConnectivityStatus() {
         return connectivityStatus;
     }
 
@@ -299,13 +240,6 @@ public class MainActivity extends AppCompatActivity {
     // Gestion du menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_option_search:
-                SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-                item.setActionView(searchView);
-                item.expandActionView();
-                return true;
-        }
         return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
@@ -313,28 +247,26 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //SearchView searchView = (SearchView) menu.findItem(R.id.menu_option_search).getActionView();
-        //searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
+        this.menu = menu;
         return true;
     }
 
     @Subscribe
     public void onConnectivityChanged(ConnectivityChanged event) {
-        if(event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET)) ||
+        connectivityStatus = event.getConnectivityStatus();
+        /*if(event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET)) ||
                 event.getConnectivityStatus().toString().equalsIgnoreCase(String.valueOf(ConnectivityStatus.MOBILE_CONNECTED))) {
-            Snackbar.make(drawerLayout, getResources().getString(R.string.network_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+            Snackbar.make(fabSearch, getResources().getString(R.string.network_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                 }
             }).show();
         } else {
-            Snackbar.make(drawerLayout, getResources().getString(R.string.network_not_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
+            /*Snackbar.make(fabSearch, getResources().getString(R.string.network_not_connected), Snackbar.LENGTH_LONG).setAction("Fermer", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                 }
             }).show();
-        }
+        }*/
     }
 }

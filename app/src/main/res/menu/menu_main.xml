@@ -9,11 +9,13 @@
         app:showAsAction="never"
         />
 -->
-    <item
-        android:id="@+id/menu_option_search"
-        android:title="Rechercher"
+
+   <item
+        android:id="@+id/menu_option_valid_search"
+        android:title="Valider"
         android:icon="@drawable/ic_done"
         android:actionViewClass="android.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom"
-        android:visible="true"/>
+        android:visible="false" />
+
 </menu>
